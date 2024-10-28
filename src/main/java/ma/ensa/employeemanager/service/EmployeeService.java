@@ -3,9 +3,11 @@ package ma.ensa.employeemanager.service;
 import ma.ensa.employeemanager.entity.Employee;
 import ma.ensa.employeemanager.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -14,14 +16,24 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private MessageSource messageSource;
+
     // Create a new employee
-    public Employee createemployee(Employee employee) {
-        return employeeRepository.save(employee);
+    public Employee createemployee(Employee employee, Locale locale) {
+        if (employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
+            throw new RuntimeException(messageSource.getMessage("email.already.use", null, locale));
+        }
+        Employee savedEmployee = employeeRepository.save(employee);
+        System.out.println(messageSource.getMessage("employee.add.success", null, locale));
+        return savedEmployee;
     }
 
     // Retrieve an employee by ID
-    public Optional<Employee> getemployeeById(long id) {
-        return employeeRepository.findById(id);
+    public Employee getemployeeById(long id, Locale locale) {
+        return employeeRepository.findById(id).orElseThrow(
+                () -> new RuntimeException(messageSource.getMessage("employee.notfound", null, locale))
+        );
     }
 
     // Retrieve all employees

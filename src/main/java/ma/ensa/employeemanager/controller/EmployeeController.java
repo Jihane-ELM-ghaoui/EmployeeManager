@@ -3,9 +3,11 @@ package ma.ensa.employeemanager.controller;
 import ma.ensa.employeemanager.service.EmployeeService;
 import ma.ensa.employeemanager.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @RestController
@@ -18,13 +20,15 @@ public class EmployeeController {
     // Create a new employee
     @PostMapping
     public Employee createemployee(@RequestBody Employee employee) {
-        return employeeService.createemployee(employee);
+        Locale locale = LocaleContextHolder.getLocale();
+        return employeeService.createemployee(employee, locale);
     }
 
     // Retrieve a employee by ID
     @GetMapping("/{id}")
-    public Optional<Employee> getemployeeById(@PathVariable Long id) {
-        return employeeService.getemployeeById(id);
+    public Employee getemployeeById(@PathVariable Long id) {
+        Locale locale = LocaleContextHolder.getLocale();
+        return employeeService.getemployeeById(id, locale);
     }
 
     // Retrieve all employees
